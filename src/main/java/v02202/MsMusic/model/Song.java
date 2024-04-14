@@ -15,7 +15,7 @@ public class Song {
 	private String fileName;
 	private String title;
 	private String artist;
-	private boolean is_favorite;
+	private boolean favorite;
 	private String addBy;
 	// public String getTitle() {
 	// 	// TODO Auto-generated method stub

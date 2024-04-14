@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.annotation.PostExchange;
+import org.springframework.ui.Model;
 
 import v02202.MsMusic.model.Song;
 import v02202.MsMusic.repository.SongRepository;
@@ -37,41 +38,42 @@ public class SongController {
         
     }
 
-    @GetMapping
-    public ResponseEntity<List<Song>> getSongs(){
-        return ResponseEntity.ok(songRepository.findAll());
+
+    @GetMapping("/user_id={user_id}")
+    public ResponseEntity<List<Song>> getSong(@PathVariable String user_id){
+        // Song song = new Song();
+        // List<Song> songList = songRepository.findAll(song.getAddBy().equals(song));
+        
+        List<Song> songList = songRepository.findByAddBy(user_id);
+        return ResponseEntity.ok(songList);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Song> getSong(@PathVariable String id){
-        Optional<Song> song = songRepository.findById(id);
-        if(song.isPresent()){
-            return ResponseEntity.ok(song.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<?> createSong(@RequestPart("song")Song song, @RequestPart("file")MultipartFile file) throws IOException{
-        if (songRepository.existsSongByFileNameEquals(file.getOriginalFilename()) || songRepository.existsSongByTitleEquals(song.getTitle())){
-            return ResponseEntity.badRequest().body("taken");
+    @PostMapping("/user_id={user_id}")
+    public ResponseEntity<?> addSong(@PathVariable String user_id, @RequestPart("file")MultipartFile file) throws IOException{
+        System.out.println(user_id + " " +file.getOriginalFilename());
+        if (songRepository.existsSongByFileNameEquals(file.getOriginalFilename())){
+            return ResponseEntity.badRequest().body("already taken");
         } else {
             System.out.println("ploading the file....");
             storageService.uploadSong(file);
-
             //saving the song data into the db
+            Song song = new Song();
+            song.setAddBy(user_id);
             song.setFileName(file.getOriginalFilename());
             Song insertedSong = songRepository.insert(song);
+        
+            
             return new ResponseEntity<>(insertedSong, HttpStatus.CREATED);
         }
-
+         
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Song> putSong(@PathVariable String id, @RequestBody Song songData){
         Optional<Song> songOptional = songRepository.findById(id);
         if(songOptional.isPresent()){
+        
             Song song = songOptional.get();
             if(songData.getTitle() != null){
                 song.setTitle(songData.getTitle());
@@ -79,7 +81,7 @@ public class SongController {
             if(songData.getArtist() != null){
                 song.setArtist(songData.getArtist());
             }
-            songData.set_favorite(song.is_favorite());
+            song.setFavorite(songData.isFavorite());
             return ResponseEntity.ok(song);
         } else {
             return ResponseEntity.notFound().build();
