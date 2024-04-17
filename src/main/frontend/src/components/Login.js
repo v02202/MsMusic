@@ -16,7 +16,10 @@ const Login = () => {
         // prevent page reload
         e.preventDefault();
         UserService.saveUser(user).then((response) => {
-            console.log(response);
+            localStorage.setItem('user_id', JSON.stringify(response.data.user_id));
+            if (response.status === 200) {
+                window.location = "/song" 
+            }
         }).catch((error) => {
             console.log(error);
         })

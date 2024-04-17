@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import v02202.MsMusic.repository.SongRepository;
 import v02202.MsMusic.services.StorageService;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/songs")
 public class SongController {
     private final StorageService storageService;
@@ -74,15 +76,20 @@ public class SongController {
         Optional<Song> songOptional = songRepository.findById(id);
         if(songOptional.isPresent()){
         
+            
+              
+            
             Song song = songOptional.get();
             if(songData.getTitle() != null){
                 song.setTitle(songData.getTitle());
-            }
+            };
             if(songData.getArtist() != null){
                 song.setArtist(songData.getArtist());
-            }
+            };
             song.setFavorite(songData.isFavorite());
-            return ResponseEntity.ok(song);
+            
+            Song updatedSong = songRepository.save(song);
+            return ResponseEntity.ok(updatedSong);
         } else {
             return ResponseEntity.notFound().build();
         }
