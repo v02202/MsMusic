@@ -50,6 +50,18 @@ public class SongController {
         return ResponseEntity.ok(songList);
     }
 
+    @GetMapping("/{song_id}")
+    public ResponseEntity<Song> getSingleSong(@PathVariable String song_id){
+        
+        Optional<Song> songOptional = songRepository.findById(song_id);
+        if (songOptional.isPresent()){
+            Song song = songOptional.get();
+            return ResponseEntity.ok(song);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/user_id={user_id}")
     public ResponseEntity<?> addSong(@PathVariable String user_id, @RequestPart("file")MultipartFile file) throws IOException{
         System.out.println(user_id + " " +file.getOriginalFilename());
@@ -74,11 +86,7 @@ public class SongController {
     @PutMapping("/{id}")
     public ResponseEntity<Song> putSong(@PathVariable String id, @RequestBody Song songData){
         Optional<Song> songOptional = songRepository.findById(id);
-        if(songOptional.isPresent()){
-        
-            
-              
-            
+        if(songOptional.isPresent()){          
             Song song = songOptional.get();
             if(songData.getTitle() != null){
                 song.setTitle(songData.getTitle());

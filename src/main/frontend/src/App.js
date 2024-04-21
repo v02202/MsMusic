@@ -5,6 +5,7 @@ import Login from './components/Login';
 import { UserList } from './components/UserList';
 import Register from './components/Register';
 import { Song } from './components/Song';
+import { UpdateSong}  from './components/UpdateSong';
 
 function App() {
   return(
@@ -17,6 +18,7 @@ function App() {
         <Route path='/users' element={<UserList/>}></Route>
         <Route path='/register' element={<Register/>}></Route>
         <Route path='/song' element={<Song/>}></Route>
+        <Route path='/song/:songId' element={<UpdateSong/>}></Route>
       </Routes>
   </BrowserRouter>
   </>
