@@ -5,13 +5,15 @@ export const Song = () => {
     const [song, setSong] = useState([]);
     const [editsong, setEditSong] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [selectedData, setSelectedData] = useState({});
     const [file,  setFile] = useState([]);
     const [filename,  setFileName] = useState({});
 
     useEffect(() => {
         const userid = JSON.parse(localStorage.getItem('user_id')) //changed
-        // console.log("get userid from localStorage"+userid);
+        console.log("get userid from localStorage"+userid);
+        if (userid == null){
+            window.location = "/login" 
+        }
         SongService.getSongList(userid)
         .then((response) => {
             setSong(response.data);
@@ -20,14 +22,6 @@ export const Song = () => {
         })
     }, []);
 
-    const hanldeClick = (selectedRec) => {
-        setSelectedData(selectedRec);
-        setShowModal(true);
-      };
-    
-    const hideModal = () => {
-    setShowModal(false);
-    };
 
     const handleChange = (e) => {
         const value = e.target.value;
@@ -39,7 +33,9 @@ export const Song = () => {
         e.preventDefault();
         console.log("update song .... "+song_id)
         SongService.updateSong(JSON.stringify(editsong), song_id).then((response) => {
-            console.log(response);
+            if (response.status === 200) {
+                window.location = "/song" 
+            }
         }).catch((error) => {
             console.log(error);
         })
@@ -70,7 +66,9 @@ export const Song = () => {
         // formData.append("file", file);
         const userid = JSON.parse(localStorage.getItem('user_id'))
         SongService.addSong(formData, userid).then((response) => {
-            console.log(response);
+            if (response.status === 200) {
+                window.location = "/song" 
+            }
         }).catch((error) => {
             console.log(error);
         })

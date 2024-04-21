@@ -17,7 +17,9 @@ const Register = () => {
         // prevent page reload
         e.preventDefault();
         UserService.registerUser(user).then((response) => {
-            console.log(response);
+            if (response.status === 200) {
+                window.location = "/song" 
+            }
         }).catch((error) => {
             console.log(error);
         })
