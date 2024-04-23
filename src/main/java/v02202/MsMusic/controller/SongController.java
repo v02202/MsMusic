@@ -104,10 +104,18 @@ public class SongController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Song> deleteSong(@PathVariable String id){
+    public ResponseEntity<?> deleteSong(@PathVariable String id) throws IOException{
         if(songRepository.existsById(id)){
-            songRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
+            Optional<Song> songOptional = songRepository.findById(id);
+            if (songOptional.isPresent()) {
+                Song song = songOptional.get();
+                String fileKey = song.getFileName();
+                System.out.println("Deleting .... "+ fileKey);
+                songRepository.deleteById(id);
+                storageService.deleteSong(fileKey);
+                return ResponseEntity.ok(song);
+            }
+            return ResponseEntity.ok("Success"); 
         } else{
             return ResponseEntity.notFound().build(); 
         }

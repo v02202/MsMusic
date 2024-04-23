@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -38,10 +39,7 @@ public class StorageService {
 		this.accessKey = accessKey;
 		this.secretKey = secretKey;
 		AWSCredentials awsCredentials =
-                new BasicAWSCredentials(this.accessKey, this.secretKey);
-		
-
-		
+                new BasicAWSCredentials(this.accessKey, this.secretKey);	
 		
 		space = AmazonS3ClientBuilder
 				.standard()
@@ -61,6 +59,16 @@ public class StorageService {
 		
 	} 
 	
+	public void deleteSong(String objectKey) throws IOException{
+		String bucketName = "msmusicbucket";
+		try {
+			space.deleteObject(bucketName, objectKey);
+            // amazonS3.deleteObject(new DeleteObjectRequest(awsS3AudioBucket, fileName));
+        } catch (AmazonServiceException ex) {
+            System.out.println("error [" + ex.getMessage() + "] occurred while removing file ");
+        }
+	}
+
 	public void uploadSong(MultipartFile file) throws IOException{
 		ObjectMetadata objectMetaData = new ObjectMetadata();
 		objectMetaData.setContentType(file.getContentType());
