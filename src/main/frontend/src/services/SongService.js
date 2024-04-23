@@ -11,6 +11,10 @@ class SongService{
         return axios.get(BACKEND_URL+`songs/${songId}`);
     }
 
+    deleteSong(songId){
+        return axios.delete(BACKEND_URL+`songs/${songId}`);
+    }
+
     updateSong(editSong, songId){
         return axios.put(
             BACKEND_URL+`songs/${songId}`, editSong,

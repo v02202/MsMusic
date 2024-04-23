@@ -40,6 +40,19 @@ export const Song = () => {
             console.log(error);
         })
     }    
+
+    const deleteSong = (e, song_id) => {
+        // prevent page reload
+        e.preventDefault();
+        console.log("delete song .... "+song_id)
+        SongService.deleteSong(song_id).then((response) => {
+            if (response.status === 200) {
+                window.location = "/song" 
+            }
+        }).catch((error) => {
+            console.log(error);
+        })
+    }    
     
     const formData = new FormData();
     const onFileChange = (event) => {
@@ -47,9 +60,6 @@ export const Song = () => {
         setFile({ file: event.target.files[0] });
         setFileName({...filename, filename:event.target.files[0].name});
         console.log("filename ----- "+filename.filename)
-        
-        
-        
         // console.log("load file .... "+file)
     };
     const handleFileUpload = (event) => {
@@ -66,7 +76,8 @@ export const Song = () => {
         // formData.append("file", file);
         const userid = JSON.parse(localStorage.getItem('user_id'))
         SongService.addSong(formData, userid).then((response) => {
-            if (response.status === 200) {
+            console.log("response.status ----- "+response.status);
+            if (response.status === 201) {
                 window.location = "/song" 
             }
         }).catch((error) => {
@@ -109,6 +120,9 @@ export const Song = () => {
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Edit
                             </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Delete
+                            </th>
                         </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -125,13 +139,18 @@ export const Song = () => {
                                         </audio>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {/* <button onClick={() => hanldeClick(item)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded">
-                                        Edit
-                                        </button> */}
                                         <button>
                                             <a href={`/song/${item.song_id}`} className="text-blue-400">Edit</a>
                                         </button>
-                                    </td>  
+                                    </td> 
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <button 
+                                            type="button"
+                                            onClick={(e) => { deleteSong(e, item.song_id); }} 
+                                            class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                                                Delete
+                                        </button>
+                                    </td> 
                                     {showModal ? (
                                         <>
                                         <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-60 outline-none focus:outline-none">
