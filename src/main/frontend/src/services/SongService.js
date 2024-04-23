@@ -3,7 +3,15 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 class SongService{
     getSongList(userId){
+        
         return axios.get(BACKEND_URL+`songs/user_id=${userId}`,
+            {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': '*'
+                },
+                
+            }    
         );
     }
 
